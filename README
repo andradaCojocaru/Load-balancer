@@ -1,0 +1,49 @@
+* Copyright 2021 Cojocaru Andrada-Ioana */
+
+Tema data are ca obiectiv folosirea unui load balancer cu diverse functii,
+pentru stocarea eficienta a memoriei unor servere:
+load_balancer.c
+-init_load_balancer prin care initializam balancerul cu un hashring pe care
+stocam etichetele(prin care putem obtine si id) si replicile serverelor, 
+dimensiunea acestuia, dar si un array de pointeri spre hashtable (memory),
+main->size reprezentand dimensiunea array-ului
+
+-loader_store adauga obiectele pe serverele corespunzatoare (hash-ul obiectului
+trebuie sa fie mai mic decat cel al serverului), folosindu-ne de functia
+server_store de pe hashtable
+
+-loader_retrieve obtinem valoarea corespunzatoare unei chei prin acelasi mod de
+ gandire, iar mai apoi apelam functia server_retrieve
+
+-loader_add_server adaugam un nou server cu cele 3 replici ale sale, iar mai
+apoi avem grja sa remapam obiectele serverelor vecine si sa le stergem din
+locul initial in cazul in care acestea se muta pe noul server
+
+-loader_remove_server sterge un server cu replicile sale mai intai de pe
+hashring, iar mai apoi preluam toate obiectele de pe acesta si le adaugam
+in celelalte servere cu functia loader_store
+
+-free_load_balancer elibereaza memoria balancer-ului
+
+In implementare am folosit functiile din laboratorul 4 de hashmap(adaptata la
+functiile date), ajutandu-ma si de implementarea mea de liste din laboratorul
+2.
+server.c
+-init_server_memory aloca memorie pentru server(server, server->size, server
+->hmax, server->buckets) si returneaza valoarea determinata
+
+-server_store adauga cate un obiect la inceput in lista determinata de index;
+alocam un nou nod cu data, data->key, data->value; in cazul in care
+reactualizam un obiect ce era deja stocat, nodul trebuie dezalocat
+
+-server_remove stergem un obiect din lista si dezalocam memoria sa
+
+-server_retrieve cautam un obiect in hashtable si returnam valoarea sa
+
+-free_server_memory dezalocam memoria intregului server(avand in vedere
+elementele pe care le-am declarat)
+
+In implementarea unui hashtable avem nevoie de liste, pentru care am
+realizat functiile de baza(create, add, remove, print).
+
+
